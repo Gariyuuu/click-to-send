@@ -1,0 +1,10 @@
+{
+  "name": "click-to-send",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "nodemailer": "^9.0.3"
+  }
+}

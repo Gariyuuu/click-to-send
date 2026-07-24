@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click to Send</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>Click to Send</h1>
+    <p class="subtitle">Type a message, then send it to email and/or Discord.</p>
+
+    <input id="recipient" type="email" placeholder="Recipient email" />
+    <input id="discord-ids" type="text" placeholder="Discord user IDs (comma-separated)" />
+    <textarea id="message" rows="5" placeholder="Type your message..."></textarea>
+    <input id="passcode" type="password" placeholder="Access code" autocomplete="off" />
+
+    <div class="buttons">
+      <button id="send-email">Send Email</button>
+      <button id="send-discord">Send Discord DM</button>
+    </div>
+
+    <p id="status" class="status"></p>
+  </main>
+
+  <script src="/script.js"></script>
+</body>
+</html>
