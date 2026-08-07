@@ -101,3 +101,86 @@ extend* this app (not just document it), start with `TASKS.md` →
 TASK-101 (runtime-verify actual send delivery with real test
 credentials) before making any other change, since that's the one thing
 this audit could not confirm by reading code alone.
+
+---
+
+## Session 2 — 2026-08-07 — Final transfer checkpoint (re-verification pass)
+
+**Goal:** A cold-start "final transfer checkpoint" — re-verify the
+existing 17-file memory system against the real current code (not
+recreate it), confirm the manual-deploy gotcha is documented prominently,
+check for secrets, resolve cross-file contradictions, and refresh
+`HANDOFF.md`'s next-session prompt. No application feature work was
+requested.
+
+**Files inspected (read in full):** `PROJECT_STATE.md`, `DEPLOYMENT.md`,
+`CLAUDE.md`, `HANDOFF.md`, `TASKS.md`, `FEATURES.md`, `SECURITY.md`,
+`TESTING.md`, `DECISIONS.md`, `FILE_MAP.md`, `ROADMAP.md`, `README.md`,
+`CHANGELOG.md`, `SESSION_LOG.md` (this file); re-read the actual source
+(`index.html`, `script.js`, `api/send-email.js`, `api/send-discord.js`,
+`package.json`, `.env.example`) and diffed it against every claim made
+about it in the docs.
+
+**Commands run:**
+```
+git status
+git log --oneline -10 / -3 --format='%H %ad %s'
+git fetch origin
+git show --stat 372d3bd
+git grep -niE "AIza|xox[baprs]-|ghp_|sk-...|-----BEGIN|password=...|token=..."
+```
+
+**Findings:**
+- **Manual-deploy gotcha (no GitHub auto-deploy, requires `vercel
+  --prod`):** already documented prominently — `DEPLOYMENT.md` has a
+  dedicated "Manual-deploy confirmation" section with the actual evidence
+  chain, `CLAUDE.md` states it under both "Current status" and
+  "Deployment," and `HANDOFF.md`'s existing "Prompt for the next Claude
+  Code account" section already calls it out explicitly (step 6). No gap
+  found here — left as-is (only lightly refreshed, see below).
+- **Real contradiction found and fixed:** `PROJECT_STATE.md`, `TASKS.md`,
+  and `CHANGELOG.md` all stated the 17 memory-system files were left
+  *uncommitted* after the 2026-08-06 audit. That was true at the moment
+  those sentences were written, but the same 2026-08-06 session went on
+  to commit all 17 files as `372d3bd` ("docs: add full handoff
+  documentation system," 20:20:07 -0700) — the docs were never updated
+  afterward. Fixed in all three files this session.
+- **Git state confirmed:** `main`, up to date with `origin/main` (`git
+  fetch origin` pulled nothing new), working tree clean, `HEAD` =
+  `372d3bd`. Matches what the corrected docs now say.
+- **Secrets scan:** `.env.example` contains placeholders only
+  (`SITE_PASSCODE=pick_something_only_you_know`, etc. — unchanged from
+  the 2026-08-06 audit). A repo-wide grep for common secret patterns
+  (API-key prefixes, PEM headers, inline `password=`/`token=` literals)
+  across all tracked files found no real secret — the only matches were
+  false positives (`TASK-101` etc. incidentally matching an `sk-`-style
+  pattern). **No real secret found.**
+- **Live-deploy staleness note:** `PROJECT_STATE.md`'s "Deployment exists
+  and is live" claim is based on a `vercel inspect` run during the
+  2026-08-06 audit (status "Ready," consistent with the `8fbe66d` favicon
+  commit — the last commit touching site-serving files; `372d3bd` is
+  docs-only and doesn't affect the deployed page). That inspection was
+  **not** re-run this session (a deliberately read-only pass); added an
+  explicit caveat to `PROJECT_STATE.md` that this status hasn't been
+  re-confirmed since, and that no `vercel --prod` run is known to have
+  happened since.
+- **No other stale/contradictory content found** across the remaining
+  files (`ARCHITECTURE.md`, `FEATURES.md`, `SECURITY.md`, `TESTING.md`,
+  `DECISIONS.md`, `FILE_MAP.md`, `ROADMAP.md`, `DATABASE.md`,
+  `UI_SYSTEM.md`, `API_REFERENCE.md`) — spot-checked against the actual
+  code (regexes, env var names, status codes, `MAX_RECIPIENTS`, validation
+  order) and all matched exactly.
+
+**Files changed:** `PROJECT_STATE.md`, `TASKS.md`, `CHANGELOG.md`,
+`SESSION_LOG.md` (this entry), `HANDOFF.md` (refreshed top section +
+next-session prompt — see `HANDOFF.md` itself for what changed).
+
+**Work remaining:** None for this checkpoint's own goal. Substantively,
+the same open items as before remain (see `TASKS.md` → Medium/Low
+priority) — this was a documentation-integrity pass, not feature work.
+
+**Recommended next action:** Same as Session 1 — if a future session's
+goal is to *use or extend* the app, start with `TASKS.md` → TASK-101.
+If the goal is to actually deploy the current `HEAD`, remember: `git
+push` alone does nothing on this project — someone must run `npx vercel
+--prod` (see `DEPLOYMENT.md`).

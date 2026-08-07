@@ -2,9 +2,11 @@
 
 You are picking up **Click to Send** with no memory of any prior
 conversation. This file is your fastest path to being useful. Everything
-here is backed by the other memory files in this repo root, all written
-2026-08-06 from a direct audit of the actual code — not from chat
-history.
+here is backed by the other memory files in this repo root, originally
+written 2026-08-06 from a direct audit of the actual code (not from chat
+history), and re-verified against the current code and git state on
+2026-08-07 (a "final transfer checkpoint" pass — see `SESSION_LOG.md` →
+Session 2 for what was checked and the one stale claim it fixed).
 
 ## What is this project?
 
@@ -27,20 +29,31 @@ In order:
 
 ## What is the current task?
 
-**Nothing is currently in progress.** A full documentation/handoff audit
-was just completed this session (2026-08-06) — this entire 17-file memory
-system is the output of that audit. No application code was changed. If
-the user hasn't given new direction, don't start on `TASKS.md`'s
-Medium/Low priority items unprompted — confirm with the user first.
+**Nothing is currently in progress.** Two documentation sessions have run
+so far: a from-scratch build of this 17-file memory system (2026-08-06),
+and a cold-start re-verification checkpoint (2026-08-07) that confirmed
+the docs still match the code, fixed one stale cross-file contradiction
+(see `SESSION_LOG.md` → Session 2), and refreshed this file. No
+application code has been changed by either session. If the user hasn't
+given new direction, don't start on `TASKS.md`'s Medium/Low priority items
+unprompted — confirm with the user first.
 
 ## What was the previous agent doing?
 
-One thing: a from-scratch documentation audit, because this repo had zero
-handoff documentation before this session (no `CLAUDE.md`, nothing). The
-agent read every source file in full, checked git history, ran read-only
-Vercel CLI checks to confirm the live deployment and (specifically)
-whether GitHub auto-deploy is configured, grepped for signs of unfinished/
-risky work, and wrote all 17 files now present at the repo root.
+Most recently (2026-08-07): a read-only re-verification pass — re-read
+every doc against the actual current code and git state, confirmed the
+manual-deploy gotcha is still documented prominently, scanned for secrets
+(none found), and fixed a contradiction where three files claimed the
+17-file doc system was never committed (it was, as `372d3bd`, later in
+the same 2026-08-06 session that wrote it).
+
+Before that (2026-08-06): a from-scratch documentation audit, because this
+repo had zero handoff documentation before that session (no `CLAUDE.md`,
+nothing). That agent read every source file in full, checked git history,
+ran read-only Vercel CLI checks to confirm the live deployment and
+(specifically) whether GitHub auto-deploy is configured, grepped for signs
+of unfinished/risky work, and wrote all 17 files now present at the repo
+root (then committed them as `372d3bd`).
 
 ## What works right now?
 
@@ -128,10 +141,12 @@ Copy-paste this to start a new session cleanly:
 Read CLAUDE.md, PROJECT_STATE.md, and TASKS.md in full before doing
 anything else. Then:
 
-1. Run `git status` and `git log --oneline -5` and confirm the repo
-   state matches what PROJECT_STATE.md describes. If it doesn't (someone
-   else has committed/changed things since), stop and tell me what's
-   different before proceeding.
+1. Run `git status`, `git log --oneline -5`, and `git fetch origin`
+   (read-only) and confirm the repo state matches what PROJECT_STATE.md
+   describes (as of this writing: branch `main`, HEAD = `372d3bd`,
+   working tree clean, 0 ahead/0 behind `origin/main`). If it doesn't
+   (someone else has committed/changed things since), stop and tell me
+   what's different before proceeding.
 
 2. In 3-5 sentences, summarize your understanding of: what this project
    is, what the current task is, and what (if anything) is blocking it.
@@ -140,7 +155,10 @@ anything else. Then:
 
 3. Flag anything in CLAUDE.md/PROJECT_STATE.md/TASKS.md/FEATURES.md that
    looks stale or contradicts what you find in the actual code — don't
-   silently work around a contradiction, surface it.
+   silently work around a contradiction, surface it. (Two prior sessions
+   have already done a pass on this — 2026-08-06 built the docs,
+   2026-08-07 re-verified them and fixed one contradiction — but don't
+   assume that means there's nothing left to find.)
 
 4. Check TASKS.md's "Current task" section — if it says nothing is in
    progress, ask me what to work on next rather than guessing; don't
@@ -154,12 +172,26 @@ anything else. Then:
    reason to change it — and if you do, write it up in DECISIONS.md
    rather than changing it silently.
 
-6. Do NOT run `npx vercel --prod` (or any deploy) without me explicitly
-   asking — this project has no GitHub auto-deploy, so any production
-   deploy is a deliberate action only, confirmed via DEPLOYMENT.md's
-   evidence.
+6. **CRITICAL — this project has NO GitHub auto-deploy.** A `git push`
+   to `origin/main` does nothing to the live site by itself. The only way
+   anything reaches `https://click-to-send.vercel.app` is a human (or you,
+   if explicitly told to) running `npx vercel` (preview) or `npx vercel
+   --prod` (production) from this directory with an authenticated Vercel
+   CLI. Do NOT run `npx vercel --prod` (or any deploy) without me
+   explicitly asking — see DEPLOYMENT.md's "Manual-deploy confirmation"
+   section for the full evidence this was independently confirmed against
+   the live Vercel project config, not just repeated from a note. If you
+   ever finish a code change and are tempted to say "deployed" or "live"
+   because you pushed to git — stop, that's wrong; it isn't live until
+   `vercel --prod` actually runs, and PROJECT_STATE.md should record when
+   that last happened.
 
 7. After completing any meaningful work, update PROJECT_STATE.md,
    TASKS.md, and append to SESSION_LOG.md before ending your session —
-   don't let the next handoff start from a stale snapshot.
+   don't let the next handoff start from a stale snapshot. If you notice
+   a doc claiming something ("committed," "deployed," "verified") that a
+   later action in the same or a prior session actually changed, fix it
+   immediately rather than leaving the contradiction for the next account
+   to trip over (this is exactly the class of bug the 2026-08-07 session
+   found and fixed).
 ```

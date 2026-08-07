@@ -54,9 +54,14 @@ direction rather than inventing new work.
   3. ✅ No real secret/token/password was written anywhere (verified via
      re-read of every file before finishing — see `SECURITY.md` and
      `HANDOFF.md`'s consistency check).
-  4. ✅ Nothing was committed, pushed, deployed, reset, or discarded — the
-     working tree's only change is the addition of these 17 new files
-     (confirmed via `git status` after writing them).
+  4. ✅ Nothing was pushed, deployed, reset, or discarded during the file-
+     writing step itself. **Correction (added during the 2026-08-07
+     checkpoint pass):** this criterion originally also claimed nothing
+     was *committed* — that was true at the instant it was written, but
+     the same 2026-08-06 session subsequently committed all 17 files as
+     `372d3bd` ("docs: add full handoff documentation system"). The docs
+     were never updated to reflect that follow-up commit until this pass.
+     See `PROJECT_STATE.md` → Git state and `SESSION_LOG.md` → Session 2.
 - **Verification steps performed:** Re-read `git status` after writing
   all files to confirm only new, untracked `.md` files appear and no
   tracked file was modified; re-grepped all new `.md` files for the

@@ -12,30 +12,41 @@ meaningful session (see `CLAUDE.md` → Permanent rules).
 - **Re-confirmed at "final account-switch checkpoint" pass:** same session,
   2026-08-06 (git state re-checked immediately before writing this file;
   nothing changed between the initial inspection and this checkpoint).
+- **Re-verified at a second, later "final transfer checkpoint" pass:**
+  2026-08-07 (new session, cold start — no memory of the 2026-08-06
+  session). Re-read all 17 files against the actual current code
+  (`index.html`, `script.js`, `api/send-email.js`, `api/send-discord.js`,
+  `package.json`), re-ran `git status`/`git log`/`git fetch origin`, and
+  re-grepped for secrets. Found and fixed one stale claim (see below) —
+  no other drift between the docs and the actual code was found.
 
 ## Git state
 
 - **Branch:** `main` (only branch that exists, locally or on `origin` —
   confirmed via `git branch -a`).
 - **Tracking:** `origin/main` → `https://github.com/Gariyuuu/click-to-send.git`,
-  reported "up to date with 'origin/main'" by `git status`.
-- **Latest commit:** `8fbe66dd85342d1a40dbfa93290a546b53bca19e` — "Add
+  reported "up to date with 'origin/main'" by `git status`, confirmed
+  again 2026-08-07 via `git fetch origin` (no new remote commits) — 0
+  ahead, 0 behind.
+- **Latest commit:** `372d3bd1c51e5a01c0e657c19b9b6899878ebbf7` — "docs:
+  add full handoff documentation system" (2026-08-06 20:20:07 -0700, 17
+  files changed, 2355 insertions). **This is the commit that actually
+  added all 17 memory-system files** — see correction below.
+- **Previous commits:** `8fbe66dd85342d1a40dbfa93290a546b53bca19e` — "Add
   favicon so the site shows an icon in the browser tab" (2026-08-06
-  03:14:55 -0700).
-- **Previous commit:** `c6cefa0be8c4b9b57381d802fa009aa82b48dcf2` —
-  "Initial commit" (2026-07-24 13:06:36 -0700).
-- **Working tree before this audit:** **Clean.** `git status` reported
-  "nothing to commit, working tree clean."
-- **Working tree after this audit:** 17 new untracked files at the repo
-  root (this memory system: `CLAUDE.md`, `PROJECT_STATE.md`,
-  `ARCHITECTURE.md`, `FILE_MAP.md`, `FEATURES.md`, `TASKS.md`,
-  `ROADMAP.md`, `DECISIONS.md`, `DATABASE.md`, `API_REFERENCE.md`,
-  `UI_SYSTEM.md`, `SECURITY.md`, `TESTING.md`, `DEPLOYMENT.md`,
-  `CHANGELOG.md`, `SESSION_LOG.md`, `HANDOFF.md`). No existing file was
-  modified. Nothing was committed, pushed, deployed, reset, or discarded
-  during this audit.
-- **Uncommitted/untracked files (pre-existing, before this audit):**
-  None — the tree was clean.
+  03:14:55 -0700); `c6cefa0be8c4b9b57381d802fa009aa82b48dcf2` — "Initial
+  commit" (2026-07-24 13:06:36 -0700).
+- **Correction (found during the 2026-08-07 checkpoint pass):** this
+  section, `TASKS.md` (DOC-001's acceptance criteria), and `CHANGELOG.md`
+  previously stated that the 17 memory-system files were left uncommitted
+  ("nothing was committed... during this audit"). That was accurate at
+  the moment those sentences were originally written, but the same
+  2026-08-06 session went on to commit all 17 files as `372d3bd` (visible
+  in `git log`) — the docs were never updated afterward to reflect that.
+  Fixed in this pass; see `SESSION_LOG.md` → Session 2 for detail.
+- **Working tree as of 2026-08-07:** **Clean.** `git status` reports
+  "nothing to commit, working tree clean" — the 17 memory-system files
+  are tracked and committed (part of `372d3bd`), not untracked.
 - **Node modules / build artifacts:** `node_modules/` exists locally
   (containing only `nodemailer`) and is correctly gitignored; not part of
   git state.
@@ -89,12 +100,18 @@ matches the actual code (re-run the verification commands in
   Verified by reading the complete file (`api/send-discord.js`, 79 lines).
   **Runtime behavior (does a DM actually arrive) was NOT tested this
   audit** — no real Discord bot token was exercised. See `TESTING.md`.
-- **Deployment exists and is live.** `npx vercel project ls` lists
+- **Deployment exists and is live** *(as of the 2026-08-06 Vercel CLI
+  inspection — not re-run during the 2026-08-07 checkpoint pass, which was
+  a read-only docs/git audit only)*. `npx vercel project ls` lists
   `click-to-send` with production URL `https://click-to-send.vercel.app`,
   and `npx vercel inspect https://click-to-send.vercel.app` confirms
   deployment status "Ready" (deployment `dpl_PRpgESdsEntT9bqLNL6MRG9eqJ4G`,
-  created 2026-08-06, ~3h before this audit — consistent with, but not
-  proven identical to, the `8fbe66d` favicon commit).
+  created 2026-08-06, ~3h before that audit — consistent with, but not
+  proven identical to, the `8fbe66d` favicon commit — the last commit that
+  touched site-serving files; `372d3bd`, the current `HEAD`, only added
+  `.md` docs and has no effect on the deployed page). **No `vercel --prod`
+  is known to have run since** — whoever deploys next should not assume
+  this status is still current without re-running `npx vercel inspect`.
 - **No GitHub auto-deploy** — confirmed via `npx vercel project inspect
   click-to-send`, which shows no "Git Repository" section at all (a
   connected project would show one; compare to `chamber-seven`, which
