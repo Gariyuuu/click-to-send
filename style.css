@@ -68,12 +68,25 @@ button {
   font-weight: 600;
   cursor: pointer;
   color: #fff;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: opacity 0.15s;
+  }
+  button:not(:disabled):active {
+    transform: none;
+  }
 }
 
 #send-email {
@@ -88,4 +101,45 @@ button:disabled {
   margin-top: 14px;
   font-size: 0.85rem;
   min-height: 1.2em;
+}
+
+/*
+ * Stamp-reveal for a successful send, adapted from CSS Text Effects' "Rubber-Stamp"
+ * (text-effects.colorion.co, MIT). The original loops forever and ends each cycle at
+ * opacity: 0 ("then fades off the page") — fine for decorative headline flair, but it
+ * would periodically make this confirmation text unreadable since it's the only place
+ * the result is shown. Trimmed to a single settle-in pass that always ends fully visible.
+ */
+.status.fx-stamp {
+  display: inline-block;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #00e08a;
+  animation: fx-stamp-in 0.5s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+@keyframes fx-stamp-in {
+  0% {
+    transform: rotate(-6deg) scale(2.2);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  60% {
+    transform: rotate(-6deg) scale(0.96);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: rotate(-3deg) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status.fx-stamp {
+    animation: none;
+    transform: none;
+    filter: none;
+  }
 }

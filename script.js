@@ -17,22 +17,32 @@ async function post(endpoint, body) {
   return data;
 }
 
+function setStatus(text, { success = false } = {}) {
+  statusEl.classList.remove("fx-stamp");
+  statusEl.textContent = text;
+  if (success) {
+    // Force a reflow so the animation restarts on consecutive successful sends.
+    void statusEl.offsetWidth;
+    statusEl.classList.add("fx-stamp");
+  }
+}
+
 emailBtn.addEventListener("click", async () => {
   const message = messageEl.value.trim();
   const to = recipientEl.value.trim();
   const passcode = passcodeEl.value;
 
-  if (!message) return (statusEl.textContent = "Type a message first.");
-  if (!to) return (statusEl.textContent = "Enter a recipient email first.");
-  if (!passcode) return (statusEl.textContent = "Enter the access code first.");
+  if (!message) return setStatus("Type a message first.");
+  if (!to) return setStatus("Enter a recipient email first.");
+  if (!passcode) return setStatus("Enter the access code first.");
 
   emailBtn.disabled = true;
-  statusEl.textContent = "Sending email...";
+  setStatus("Sending email...");
   try {
     await post("/api/send-email", { message, to, passcode });
-    statusEl.textContent = "Email sent.";
+    setStatus("Email sent.", { success: true });
   } catch (err) {
-    statusEl.textContent = `Failed to send email: ${err.message}`;
+    setStatus(`Failed to send email: ${err.message}`);
   } finally {
     emailBtn.disabled = false;
   }
@@ -46,24 +56,27 @@ discordBtn.addEventListener("click", async () => {
     .filter(Boolean);
   const passcode = passcodeEl.value;
 
-  if (!message) return (statusEl.textContent = "Type a message first.");
+  if (!message) return setStatus("Type a message first.");
   if (userIds.length === 0)
-    return (statusEl.textContent = "Enter at least one Discord user ID first.");
-  if (!passcode) return (statusEl.textContent = "Enter the access code first.");
+    return setStatus("Enter at least one Discord user ID first.");
+  if (!passcode) return setStatus("Enter the access code first.");
 
   discordBtn.disabled = true;
-  statusEl.textContent = "Sending Discord DM(s)...";
+  setStatus("Sending Discord DM(s)...");
   try {
     const data = await post("/api/send-discord", { message, userIds, passcode });
     const failed = data.results.filter((r) => !r.ok);
-    statusEl.textContent =
-      failed.length === 0
-        ? `Sent to ${data.results.length} recipient(s).`
-        : `Sent to ${data.results.length - failed.length}/${data.results.length}. Failed: ${failed
-            .map((f) => f.userId)
-            .join(", ")}`;
+    if (failed.length === 0) {
+      setStatus(`Sent to ${data.results.length} recipient(s).`, { success: true });
+    } else {
+      setStatus(
+        `Sent to ${data.results.length - failed.length}/${data.results.length}. Failed: ${failed
+          .map((f) => f.userId)
+          .join(", ")}`
+      );
+    }
   } catch (err) {
-    statusEl.textContent = `Failed to send Discord DM: ${err.message}`;
+    setStatus(`Failed to send Discord DM: ${err.message}`);
   } finally {
     discordBtn.disabled = false;
   }
