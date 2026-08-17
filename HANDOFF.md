@@ -4,9 +4,11 @@ You are picking up **Click to Send** with no memory of any prior
 conversation. This file is your fastest path to being useful. Everything
 here is backed by the other memory files in this repo root, originally
 written 2026-08-06 from a direct audit of the actual code (not from chat
-history), and re-verified against the current code and git state on
-2026-08-07 (a "final transfer checkpoint" pass — see `SESSION_LOG.md` →
-Session 2 for what was checked and the one stale claim it fixed).
+history), re-verified on 2026-08-07 (a "final transfer checkpoint" pass —
+see `SESSION_LOG.md` → Session 2), and re-synced again on 2026-08-17 after
+six real commits (OG/Twitter meta tags, `og.png`, button/status
+micro-interactions) landed without the docs being updated — see
+`SESSION_LOG.md` → Session 3 for what was checked and fixed.
 
 ## What is this project?
 
@@ -29,18 +31,35 @@ In order:
 
 ## What is the current task?
 
-**Nothing is currently in progress.** Two documentation sessions have run
-so far: a from-scratch build of this 17-file memory system (2026-08-06),
-and a cold-start re-verification checkpoint (2026-08-07) that confirmed
-the docs still match the code, fixed one stale cross-file contradiction
-(see `SESSION_LOG.md` → Session 2), and refreshed this file. No
-application code has been changed by either session. If the user hasn't
-given new direction, don't start on `TASKS.md`'s Medium/Low priority items
+**`T-001` — nothing is currently in progress.** (`T-001` is a stable
+placeholder ID for this "no active task" state, kept identical across
+`CLAUDE.md`/`PROJECT_STATE.md`/`TASKS.md`/`HANDOFF.md`; it doesn't name an
+application task — see `TASKS.md` for the real `DOC-`/`TASK-`-numbered
+backlog.) Three documentation sessions have
+run so far: a from-scratch build of this 17-file memory system
+(2026-08-06), a cold-start re-verification checkpoint (2026-08-07), and a
+second cold-start onboard-mode re-sync (2026-08-17) that caught six real
+application commits the docs had missed (see `SESSION_LOG.md` → Session
+3). No application code has been changed by any of the three sessions —
+the underlying app features (email/Discord send + the passcode gate) are
+unchanged since 2026-08-06; only cosmetic/polish work (OG meta tags,
+button micro-interactions) has landed. If the user hasn't given new
+direction, don't start on `TASKS.md`'s Medium/Low priority items
 unprompted — confirm with the user first.
 
 ## What was the previous agent doing?
 
-Most recently (2026-08-07): a read-only re-verification pass — re-read
+Most recently (2026-08-17): a cold-start onboard-mode pass. Found six
+commits since the 2026-08-07 checkpoint (`a428ee5` through `e645ea5`) that
+were never reflected in the docs — OpenGraph/Twitter card meta tags,
+`og.png`, and a button-press + success-stamp CSS/JS animation on the
+status line. Diffed every changed file against `372d3bd`, re-ran the
+Vercel CLI checks (still no GitHub auto-deploy; the live deployment was
+found to already be current, matching `HEAD`), and fixed the drift across
+`CHANGELOG.md`, `FILE_MAP.md`, `UI_SYSTEM.md`, `CLAUDE.md`,
+`PROJECT_STATE.md`, `DEPLOYMENT.md`, `TASKS.md`, and this file.
+
+Before that (2026-08-07): a read-only re-verification pass — re-read
 every doc against the actual current code and git state, confirmed the
 manual-deploy gotcha is still documented prominently, scanned for secrets
 (none found), and fixed a contradiction where three files claimed the
@@ -143,10 +162,12 @@ anything else. Then:
 
 1. Run `git status`, `git log --oneline -5`, and `git fetch origin`
    (read-only) and confirm the repo state matches what PROJECT_STATE.md
-   describes (as of this writing: branch `main`, HEAD = `372d3bd`,
-   working tree clean, 0 ahead/0 behind `origin/main`). If it doesn't
-   (someone else has committed/changed things since), stop and tell me
-   what's different before proceeding.
+   describes (as of this writing: branch `main`, HEAD = `e645ea5`,
+   working tree clean). If it doesn't (someone else has committed/changed
+   things since — this has already happened twice, see `SESSION_LOG.md`
+   → Sessions 2 and 3), stop and tell me what's different before
+   proceeding, and update the memory files rather than assuming they're
+   still accurate.
 
 2. In 3-5 sentences, summarize your understanding of: what this project
    is, what the current task is, and what (if anything) is blocking it.

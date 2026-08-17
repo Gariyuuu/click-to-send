@@ -35,12 +35,12 @@ labeled **Unverified**/**Needs confirmation** rather than stated as fact.
   in-progress feature work found in the repo (no TODOs, no half-built code
   paths, no commented-out sections). Two commits total.
 - **Production status:** **Deployed** to Vercel at
-  `https://click-to-send.vercel.app` (confirmed via `npx vercel project ls`
-  and `npx vercel inspect https://click-to-send.vercel.app` — status
-  "Ready", last deployment created 2026-08-06, ~3h before this audit).
-  Whether the deployed version reflects the exact current `HEAD` commit
-  (`8fbe66d`) was not independently re-verified beyond the deployment
-  timestamp being consistent with it — see `DEPLOYMENT.md`.
+  `https://click-to-send.vercel.app`. **Re-confirmed 2026-08-17** (onboard
+  audit) via `npx vercel inspect https://click-to-send.vercel.app` —
+  status "Ready", deployment `dpl_J4xcL6UWVWJAWuXWePYnAfWRk1Za` created
+  2026-08-16 18:33:36 -0700, which matches `script.js`/`style.css`'s local
+  mtimes to the minute — i.e. the live deployment reflects current `HEAD`
+  (`e645ea5`), not a stale build. See `DEPLOYMENT.md`.
 - **Repository type:** Single app, not a monorepo. One `package.json` at
   the root; two serverless functions under `api/`; a static
   `index.html`/`style.css`/`script.js` trio at the root.
@@ -53,6 +53,13 @@ labeled **Unverified**/**Needs confirmation** rather than stated as fact.
 
 See `PROJECT_STATE.md` for the exact, timestamped snapshot. Summary:
 
+- **Current task: `T-001`** — no active task. Nothing is in progress or
+  queued by the user; `T-001` is this memory system's stable ID for that
+  "nothing in progress" state (not an application task), kept identical
+  across `CLAUDE.md`/`PROJECT_STATE.md`/`TASKS.md`/`HANDOFF.md` per the
+  repo-memory current-task invariant. The last completed documentation
+  task was `DOC-002` (see `TASKS.md`); the unstarted backlog items are
+  `TASK-101` through `TASK-104` (also `TASKS.md`).
 - **Working tree:** Clean as of this audit (`git status` → "nothing to
   commit, working tree clean").
 - **Current blockers:** None found.
@@ -150,6 +157,8 @@ click-to-send/
 ├── package-lock.json           # npm lockfile, lockfileVersion 3
 ├── .env.example                 # Template for SITE_PASSCODE / GMAIL_USER / GMAIL_APP_PASSWORD
 │                                 # / DISCORD_BOT_TOKEN — placeholders only, safe to commit
+├── og.png                       # Open Graph / Twitter-card preview image, added 2026-08-14
+│                                 # (referenced by index.html's og:image/twitter:image tags)
 ├── .gitignore                   # Ignores node_modules, .env*, .vercel, logs, editor files
 ├── .vercel/                      # Vercel CLI link metadata (gitignored) — projectId/orgId
 │                                 # for project "click-to-send"
@@ -201,7 +210,7 @@ These are **Verified** (observed directly in the existing, small codebase).
   used anywhere.
 - **File organization:** One file per concern — one HTML file, one CSS
   file, one client JS file, one serverless function per external service
-  (`send-email.js`, `send-discord.js`). No shared/utility module exists
+  (`api/send-email.js`, `api/send-discord.js`). No shared/utility module exists
   between the two `api/` files even though both duplicate the same
   passcode-check and message-validation pattern — this duplication is
   small (a few lines) and was not refactored during this audit (a
@@ -245,13 +254,28 @@ public/private env var distinction; nothing in `script.js` or `index.html`
 reads any env var.
 
 `.env.example` exists at the repo root with exactly these four
-placeholder entries (verified — see the file itself). `.gitignore` ignores
-`.env`, `.env.local`, and a catch-all `.env*` pattern — **unlike the
-issue found in a sibling project's audit, `.env.example` here is NOT
-caught by the broad pattern**, because `.gitignore` lists the specific
-`.env`/`.env.local` names first and the broad `.env*` line is last; `git
-status`/`git log` confirm `.env.example` **is** tracked and committed
-(part of the initial commit) — no fix was needed here.
+placeholder entries (verified — see the file itself).
+
+**Correction (found 2026-08-17, previously stated wrong in this file and
+in `SECURITY.md`):** `.gitignore`'s final line, a catch-all `.env*`
+pattern, **does** catch `.env.example` — confirmed via `git check-ignore
+-v .env.example`, which reports it ignored by `.gitignore:28:.env*`. The
+2026-08-06 audit's claim that `.gitignore` listing `.env`/`.env.local`
+by name *before* the broad `.env*` line meant the broad pattern didn't
+apply to `.env.example` was **factually wrong** — plain (non-negated)
+`.gitignore` patterns don't work that way; any matching pattern excludes
+the file, order among non-negated lines doesn't create an exception.
+Separately, and more concretely: `git log --all --full-history --
+.env.example` returns **no commits at all** — `.env.example` has never
+been part of any commit in this repo's history (not the initial commit,
+not any later one), and `git ls-files` confirms it is not tracked today.
+**Practical implication: a fresh `git clone` of this repo does not
+include `.env.example`.** The file only exists in this checkout as an
+untracked, locally-created file. `README.md`'s setup instructions
+(`cp .env.example .env`) only work for someone who already has this
+local file — they will fail on a clean clone from GitHub. See `TASKS.md`
+→ High priority and `SECURITY.md` → Secret handling for the corrected
+claim.
 
 ## Database summary
 
@@ -348,8 +372,8 @@ Headline items found during this audit:
 1. **No rate limiting on either API route.** Beyond the shared passcode,
    nothing stops a caller who has the passcode from sending an unbounded
    number of emails/DMs in a loop. See `SECURITY.md`.
-2. **Duplicated validation logic between `send-email.js` and
-   `send-discord.js`** (passcode check, message-presence check) — small
+2. **Duplicated validation logic between `api/send-email.js` and
+   `api/send-discord.js`** (passcode check, message-presence check) — small
    in scope, but a third endpoint would make a shared helper worth
    extracting. See `TASKS.md` → Technical debt.
 3. **No automated tests.** See `TESTING.md`.

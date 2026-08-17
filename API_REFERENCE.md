@@ -121,5 +121,6 @@ Content-Type: `application/json`
 
 No `GET` routes exist for either path (both reject non-POST with 405).
 No health-check endpoint, no status endpoint, no webhook receiver. No
-other files exist under `api/` beyond the two documented above (verified:
-`ls api/` shows exactly `send-discord.js` and `send-email.js`).
+other files exist under `api/` beyond the two documented above (verified
+via `ls api/`, which lists exactly two files, `api/send-discord.js` and
+`api/send-email.js`).

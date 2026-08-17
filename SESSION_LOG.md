@@ -23,12 +23,11 @@ application feature work was requested.
 - `.env.example`, `.gitignore`
 - `.vercel/project.json`, `.vercel/README.txt`, `.vercel/cache/` (empty)
 - `README.md`
-- Structural (format-only) reference reads of `chamber-seven/CLAUDE.md`,
-  `chamber-seven/PROJECT_STATE.md`, `chamber-seven/HANDOFF.md`,
-  `chamber-seven/ARCHITECTURE.md`, `chamber-seven/TASKS.md`,
-  `chamber-seven/DEPLOYMENT.md` — used only to calibrate section headings
-  and level of detail; no factual content was copied into any
-  click-to-send doc.
+- Structural (format-only) reference reads of the sibling repo
+  `~/Projects/chamber-seven`'s own `CLAUDE.md`, `PROJECT_STATE.md`,
+  `HANDOFF.md`, `ARCHITECTURE.md`, `TASKS.md`, and `DEPLOYMENT.md` — used
+  only to calibrate section headings and level of detail; no factual
+  content was copied into any click-to-send doc.
 
 **Files created (all 17, at the repo root):**
 `CLAUDE.md`, `PROJECT_STATE.md`, `ARCHITECTURE.md`, `FILE_MAP.md`,
@@ -184,3 +183,94 @@ goal is to *use or extend* the app, start with `TASKS.md` → TASK-101.
 If the goal is to actually deploy the current `HEAD`, remember: `git
 push` alone does nothing on this project — someone must run `npx vercel
 --prod` (see `DEPLOYMENT.md`).
+
+---
+
+## Session 3 — 2026-08-17 — Onboard-mode re-sync (six undocumented commits)
+
+**Goal:** Arrive cold at this repo (no memory of Sessions 1-2) as part of
+a portfolio-wide documentation sweep, verify the existing 17-file memory
+system against current repo state, and fix any drift — per the
+`repo-memory` skill's **onboard** mode (core docs existed and looked
+substantively real, so this wasn't an init).
+
+**What was found:** `git log` showed `HEAD` at `e645ea5`, six commits
+ahead of `372d3bd`/`a428ee5` where the 2026-08-07 checkpoint left off:
+`a428ee5` (that checkpoint's own doc commit — already accounted for),
+`97f51cd`/`e53d99b` (OpenGraph + Twitter card meta tags added to
+`index.html`), `45ac6e6` (added `og.png`), and `5888b87`/`e645ea5`
+(button press + a success-stamp CSS animation on the status line, wired
+through a new `setStatus()` helper in `script.js`). None of this was
+reflected in any memory file — `CHANGELOG.md` still ended at `372d3bd`,
+`FILE_MAP.md` had no `og.png` row, `UI_SYSTEM.md` still described the
+pre-animation button/status styling, and `CLAUDE.md`/`PROJECT_STATE.md`'s
+production-status claims were six days stale.
+
+**Verification performed (all read-only):**
+- `git log --oneline --all --graph -30` and `git diff --stat
+  372d3bd..HEAD` to enumerate exactly what changed and in which files.
+- Read the full diff of `index.html`, `script.js`, and `style.css` between
+  `372d3bd` and `HEAD` (not just the commit messages) before writing any
+  claim about what changed.
+- `npx vercel project inspect click-to-send` — re-confirmed **no "Git
+  Repository" section**, so the no-auto-deploy claim from the prior
+  memory note (`click_to_send_project.md`) and `DEPLOYMENT.md` is still
+  independently true, not just repeated.
+- Confirmed no `vercel.json` and no `.github/workflows/` exist (`find
+  .github -type f` errors — the directory itself doesn't exist), ruling
+  out other possible auto-deploy paths.
+- `npx vercel inspect https://click-to-send.vercel.app` — found the live
+  production deployment (`dpl_J4xcL6UWVWJAWuXWePYnAfWRk1Za`) was created
+  2026-08-16 18:33:36 -0700, matching `script.js`/`style.css`'s local
+  mtimes to the minute — i.e. **someone ran `vercel --prod` after the
+  latest commit**, so production is current, not stale. This is a
+  positive finding worth recording: don't assume "no auto-deploy" implies
+  "the live site is behind."
+- `git status` — clean working tree throughout, no uncommitted changes to
+  protect.
+
+**Files changed this session:** `CHANGELOG.md` (backfilled 6 missing
+commit entries), `FILE_MAP.md` (added `og.png` row), `UI_SYSTEM.md`
+(button press + success-stamp animation, `og.png` asset, corrected the
+"no media queries" claim to account for the new `prefers-reduced-motion`
+blocks, updated the line count), `CLAUDE.md` (production-status line,
+repo-structure listing), `PROJECT_STATE.md` (git state, active
+objective/last-completed/current-task sections, "what works" deployment
+bullets), `DEPLOYMENT.md` (re-confirmed production URL/timestamp and the
+no-auto-deploy evidence with 2026-08-17 findings alongside the original
+2026-08-06 ones), `TASKS.md` (current-task/session pointer), `HANDOFF.md`
+(header date, current-task section, copy-paste prompt's git-state
+reference), this file.
+
+**Real, previously-undetected contradiction found and fixed:** while
+reconciling `commit_memory.sh`'s dry-run output (which flagged
+`.env.example` as gitignored), ran `git check-ignore -v .env.example`
+(ignored via the `.env*` catch-all, `.gitignore:28`) and `git log --all
+--full-history -- .env.example` (zero commits, ever). This directly
+contradicts `CLAUDE.md`'s and `SECURITY.md`'s original 2026-08-06 claim
+that `.env.example` "is tracked and committed... no fix was needed here"
+— that claim was **wrong from the moment it was written**, not something
+that changed later; `.env.example` has never been part of any commit in
+this repo, and `git ls-files` confirms it isn't tracked today. Practical
+effect: a fresh `git clone` of this repo will not include `.env.example`,
+so `README.md`'s documented `cp .env.example .env` setup step silently
+has nothing to copy. Corrected the claim in `CLAUDE.md`, `SECURITY.md`,
+and `FILE_MAP.md`, and added `TASK-105` (High priority) to `TASKS.md` —
+did **not** touch `.gitignore` or force-add the file, since that's a
+config change outside a documentation-only pass and needs the user's
+decision on which fix (a `!.env.example` negation vs. narrowing the
+catch-all pattern).
+
+**No secrets found.** No application code was changed.
+
+**Work remaining:** None for this pass's own goal. The substantive
+backlog (`TASK-101` runtime delivery verification, `TASK-102` rate
+limiting, `TASK-103` shared validation helper, `TASK-104` lint script) is
+unchanged from prior sessions — see `TASKS.md`.
+
+**Recommended next action:** If a future session's goal is to *use or
+extend* the app, start with `TASKS.md` → TASK-101 (still the
+highest-value gap: real send-delivery has never been runtime-tested). If
+another feature/polish commit lands without a corresponding `vercel
+--prod`, `DEPLOYMENT.md`'s "production reflects HEAD" claim above will go
+stale immediately — re-run `npx vercel inspect` before trusting it.

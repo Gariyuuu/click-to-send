@@ -19,62 +19,82 @@ meaningful session (see `CLAUDE.md` → Permanent rules).
   `package.json`), re-ran `git status`/`git log`/`git fetch origin`, and
   re-grepped for secrets. Found and fixed one stale claim (see below) —
   no other drift between the docs and the actual code was found.
+- **Re-verified at a third pass ("onboard" mode), 2026-08-17:** cold
+  start again. Six real commits had landed since the 2026-08-07 checkpoint
+  (see Git state below) touching `index.html`, `script.js`, `style.css`,
+  and adding `og.png` — none of it reflected in the docs until this pass.
+  Re-ran `git log`/`git status`, diffed every changed file against what
+  `372d3bd`-era docs described, re-ran `npx vercel project inspect
+  click-to-send` and `npx vercel inspect
+  https://click-to-send.vercel.app` (both live, read-only checks, no
+  deploy performed). Fixed the drift in `CHANGELOG.md`, `FILE_MAP.md`,
+  `UI_SYSTEM.md`, `CLAUDE.md`, this file, `TASKS.md`, and `HANDOFF.md` —
+  see `SESSION_LOG.md` → Session 3.
 
 ## Git state
 
 - **Branch:** `main` (only branch that exists, locally or on `origin` —
   confirmed via `git branch -a`).
-- **Tracking:** `origin/main` → `https://github.com/Gariyuuu/click-to-send.git`,
-  reported "up to date with 'origin/main'" by `git status`, confirmed
-  again 2026-08-07 via `git fetch origin` (no new remote commits) — 0
-  ahead, 0 behind.
-- **Latest commit:** `372d3bd1c51e5a01c0e657c19b9b6899878ebbf7` — "docs:
-  add full handoff documentation system" (2026-08-06 20:20:07 -0700, 17
-  files changed, 2355 insertions). **This is the commit that actually
-  added all 17 memory-system files** — see correction below.
-- **Previous commits:** `8fbe66dd85342d1a40dbfa93290a546b53bca19e` — "Add
-  favicon so the site shows an icon in the browser tab" (2026-08-06
-  03:14:55 -0700); `c6cefa0be8c4b9b57381d802fa009aa82b48dcf2` — "Initial
-  commit" (2026-07-24 13:06:36 -0700).
-- **Correction (found during the 2026-08-07 checkpoint pass):** this
-  section, `TASKS.md` (DOC-001's acceptance criteria), and `CHANGELOG.md`
-  previously stated that the 17 memory-system files were left uncommitted
-  ("nothing was committed... during this audit"). That was accurate at
-  the moment those sentences were originally written, but the same
-  2026-08-06 session went on to commit all 17 files as `372d3bd` (visible
-  in `git log`) — the docs were never updated afterward to reflect that.
-  Fixed in this pass; see `SESSION_LOG.md` → Session 2 for detail.
-- **Working tree as of 2026-08-07:** **Clean.** `git status` reports
-  "nothing to commit, working tree clean" — the 17 memory-system files
-  are tracked and committed (part of `372d3bd`), not untracked.
+- **Tracking:** `origin/main` → `https://github.com/Gariyuuu/click-to-send.git`.
+  `git status` on 2026-08-17 reports "up to date with 'origin/main'" — not
+  re-confirmed with `git fetch origin` this pass (last explicit fetch
+  confirmation was 2026-08-07).
+- **Latest commit:** `e645ea5` — "Merge branch 'chore/polish' into main"
+  (2026-08-16), merging `5888b87` ("feat(ui): add button press and
+  success-stamp micro-interactions"). Confirmed via `git log
+  --oneline --all --graph` on 2026-08-17.
+- **Commits since the 2026-08-07 checkpoint** (`a428ee5` → `e645ea5`, 6
+  commits, none of them previously reflected in this file): `a428ee5`
+  (docs-only, the 2026-08-07 checkpoint's own commit), `97f51cd`/`e53d99b`
+  (OpenGraph + Twitter card meta tags in `index.html`), `45ac6e6` (added
+  `og.png`), `5888b87`/`e645ea5` (button press + success-stamp CSS/JS
+  micro-interactions). Full detail: `CHANGELOG.md`.
+- **Earlier commits:** `372d3bd` — "docs: add full handoff documentation
+  system" (2026-08-06 20:20:07 -0700, 17 files, 2355 insertions);
+  `8fbe66d` — "Add favicon so the site shows an icon in the browser tab"
+  (2026-08-06); `c6cefa0` — "Initial commit" (2026-07-24).
+- **Working tree as of 2026-08-17:** **Clean.** `git status` reports
+  "nothing to commit, working tree clean."
 - **Node modules / build artifacts:** `node_modules/` exists locally
   (containing only `nodemailer`) and is correctly gitignored; not part of
   git state.
 
 ## Active objective
 
-This session's objective was **documentation only**: build a complete
-17-file handoff/memory-doc system for this repo from scratch (none
-existed before), matching the structural depth of sibling projects
-`chamber-seven` and `buildstrike-arena`, using only facts verified by
-directly inspecting this repo. No application feature work was requested
-or performed.
+The 2026-08-17 session's objective was also **documentation only**: an
+onboard-mode pass to catch up the memory system with six real commits
+(feature/polish work — OG meta tags, `og.png`, button micro-interactions —
+plus one prior doc-checkpoint commit) that had landed since the last
+verification on 2026-08-07 without being reflected in the docs. No
+application code was changed by this pass. (Original objective, 2026-08-06:
+build a complete 17-file handoff/memory-doc system for this repo from
+scratch, matching sibling projects `chamber-seven`/`buildstrike-arena`.)
 
 ## Last completed task
 
-Full repository audit (source files, `package.json`/`package-lock.json`,
-`.env.example`, `.vercel/project.json`, `.gitignore`, `README.md`, git
-history, and a read-only Vercel CLI inspection of the live deployment) and
-creation of all 17 documentation files listed above. See `SESSION_LOG.md`
-for the exact commands run.
+**DOC-002 (2026-08-17):** re-synced the memory system against six
+undocumented commits — `CHANGELOG.md` backfilled with the missing commit
+entries, `FILE_MAP.md`/`UI_SYSTEM.md`/`CLAUDE.md`/this file updated to
+describe `og.png` and the button/status micro-interactions, and the
+deployment claim re-confirmed live (see `DEPLOYMENT.md`). See
+`SESSION_LOG.md` → Session 3 for the exact commands run.
+
+Prior: full repository audit (source files, `package.json`/
+`package-lock.json`, `.env.example`, `.vercel/project.json`, `.gitignore`,
+`README.md`, git history, and a read-only Vercel CLI inspection of the
+live deployment) and creation of all 17 original documentation files
+(2026-08-06).
 
 ## Current unfinished task
 
-**None.** The documentation build is complete as of this file being
-written. If a next session picks this up mid-way, check whether all 17
-files listed above exist at the repo root and whether their content still
-matches the actual code (re-run the verification commands in
-`CLAUDE.md` → "Testing and verification" / `SESSION_LOG.md`).
+**`T-001` — no active task.** Nothing is in progress or queued. (`T-001`
+is this memory system's stable ID for the "nothing in progress" state,
+kept identical across `CLAUDE.md`/`PROJECT_STATE.md`/`TASKS.md`/
+`HANDOFF.md`; it does not name an application task.) Last completed:
+`DOC-002` (this pass). Unstarted backlog: `TASK-101` through `TASK-104` in
+`TASKS.md`. If a next session picks this up, check `git log --oneline -5`
+against the "Latest commit" above first — this file only stays accurate
+until the next commit lands.
 
 ## What works (verified this audit)
 
@@ -100,22 +120,23 @@ matches the actual code (re-run the verification commands in
   Verified by reading the complete file (`api/send-discord.js`, 79 lines).
   **Runtime behavior (does a DM actually arrive) was NOT tested this
   audit** — no real Discord bot token was exercised. See `TESTING.md`.
-- **Deployment exists and is live** *(as of the 2026-08-06 Vercel CLI
-  inspection — not re-run during the 2026-08-07 checkpoint pass, which was
-  a read-only docs/git audit only)*. `npx vercel project ls` lists
-  `click-to-send` with production URL `https://click-to-send.vercel.app`,
-  and `npx vercel inspect https://click-to-send.vercel.app` confirms
-  deployment status "Ready" (deployment `dpl_PRpgESdsEntT9bqLNL6MRG9eqJ4G`,
-  created 2026-08-06, ~3h before that audit — consistent with, but not
-  proven identical to, the `8fbe66d` favicon commit — the last commit that
-  touched site-serving files; `372d3bd`, the current `HEAD`, only added
-  `.md` docs and has no effect on the deployed page). **No `vercel --prod`
-  is known to have run since** — whoever deploys next should not assume
-  this status is still current without re-running `npx vercel inspect`.
-- **No GitHub auto-deploy** — confirmed via `npx vercel project inspect
-  click-to-send`, which shows no "Git Repository" section at all (a
-  connected project would show one; compare to `chamber-seven`, which
-  does). See `DEPLOYMENT.md`.
+- **Deployment exists, is live, and reflects current `HEAD`** — re-checked
+  2026-08-17 (not just carried forward from the 2026-08-06 audit). `npx
+  vercel inspect https://click-to-send.vercel.app` shows status "Ready"
+  for deployment `dpl_J4xcL6UWVWJAWuXWePYnAfWRk1Za`, created 2026-08-16
+  18:33:36 -0700 — that timestamp matches `script.js`/`style.css`'s local
+  file mtimes to the minute, i.e. someone ran `vercel --prod` right after
+  the `5888b87`/`e645ea5` micro-interactions commit, so production is
+  current, not stale. **Still true as of this pass: no `vercel --prod` run
+  is automatically triggered by future pushes** — whoever deploys next
+  still has to run it manually; don't assume a later `git push` alone
+  reached production without re-running `npx vercel inspect`.
+- **No GitHub auto-deploy** — re-confirmed 2026-08-17 via `npx vercel
+  project inspect click-to-send`, which still shows no "Git Repository"
+  section (a connected project would show one; compare to `chamber-seven`,
+  which does), and no vercel.json or `.github/workflows/` exist in this
+  repo either. See `DEPLOYMENT.md` for full evidence — the manual-deploy
+  requirement documented there is unchanged.
 
 ## What fails / is unverified
 

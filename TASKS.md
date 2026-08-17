@@ -5,9 +5,15 @@ Update this file after every meaningful session. Move completed tasks to
 
 ## Current task
 
-**None.** This session's only task was a documentation/handoff audit (see
-below) — it is complete. Nothing is queued; wait for the user's next
-direction rather than inventing new work.
+**`T-001` — no active task.** Nothing is in progress or queued; wait for
+the user's next direction rather than inventing new work. (`T-001` is a
+stable placeholder ID for this "nothing in progress" state, kept
+identical across `CLAUDE.md`/`PROJECT_STATE.md`/`TASKS.md`/`HANDOFF.md` —
+it is not an application task, and is separate from this file's own
+`DOC-`/`TASK-`-numbered items below.) Most recently, **DOC-002
+(2026-08-17)** re-synced this memory system with six commits (OG meta
+tags, `og.png`, button/status micro-interactions) that had landed since
+DOC-001 without being documented — see `SESSION_LOG.md` → Session 3.
 
 ### DOC-001 — Build the full 17-file handoff documentation system
 
@@ -81,9 +87,27 @@ Nothing currently blocked.
 
 ## High priority
 
-None outstanding — nothing found during this audit rises to "high
-priority" (no broken functionality, no security incident, no failing
-build).
+- **TASK-105 — `.env.example` is not actually tracked in git; a fresh
+  clone won't have it.** Found 2026-08-17 (onboard-mode re-sync),
+  correcting a factual error in the original 2026-08-06 docs. Verified:
+  `git check-ignore -v .env.example` → ignored via the `.gitignore:28`
+  catch-all `.env*` pattern; `git log --all --full-history --
+  .env.example` → no commits ever; `git ls-files` → not listed. The file
+  currently exists only as an untracked local file in this checkout.
+  **Practical effect:** `README.md`'s documented setup step (`cp
+  .env.example .env`) silently fails for anyone who clones this repo
+  fresh from GitHub — there is nothing to copy. Files: `.gitignore`
+  (the `.env*` line is too broad), `.env.example` (untracked). Fix
+  options: (a) add a `!.env.example` negation line to `.gitignore` after
+  the `.env*` catch-all, or (b) rename the broad pattern to be more
+  specific (`.env.local`/`.env.*.local`) instead of a blanket `.env*`.
+  Either requires editing `.gitignore` and then `git add -f .env.example`
+  (or removing the negation need) and committing — **do not do this
+  without asking the user first**, since it changes what future
+  `git status`/`git add -A` runs will pick up repo-wide, and the fix
+  itself is a config change outside this documentation-only pass's scope.
+  Acceptance: `git ls-files | grep .env.example` returns the file, and a
+  fresh `git clone` + `cp .env.example .env` works.
 
 ## Medium priority
 
@@ -105,8 +129,9 @@ build).
 
 - **TASK-103 — Extract shared validation logic.** `api/send-email.js` and
   `api/send-discord.js` duplicate the passcode-check and message-presence
-  check almost verbatim. Not urgent at 2 files, but worth a shared
-  `api/_lib/validate.js`-style helper if a third endpoint is ever added.
+  check almost verbatim. Not urgent at 2 files, but worth extracting a
+  shared helper module (not yet created — e.g. a new `api/_lib/`
+  directory with a `validate.js` file) if a third endpoint is ever added.
   Files: `api/send-email.js`, `api/send-discord.js`. Acceptance: both
   files import and use the same helper, behavior is unchanged (same
   status codes/messages for the same inputs).
@@ -150,8 +175,13 @@ None outstanding beyond what this audit just produced.
 
 ## Recently completed
 
-- DOC-001 — Full 17-file handoff documentation system (2026-08-06, this
-  session). See above for detail.
+- DOC-002 — Onboard-mode re-sync of the memory system against 6
+  undocumented commits (OG/Twitter meta tags, `og.png`, button/status
+  micro-interactions), plus a re-confirmation that the live deployment is
+  current and still has no GitHub auto-deploy (2026-08-17). See
+  `SESSION_LOG.md` → Session 3.
+- DOC-001 — Full 17-file handoff documentation system (2026-08-06). See
+  above for detail.
 
 ## Deferred
 

@@ -23,7 +23,8 @@ anywhere).
 
 - **Label:** Verified (directly observable — `api/send-email.js` and
   `api/send-discord.js` are separate files with separate, near-identical
-  validation logic, not a single `api/send.js` with a `channel` param).
+  validation logic; a combined single-endpoint file such as
+  `api/send.js` with a `channel` param does not exist in this repo).
 - **Decision:** Email and Discord sends are two separate routes.
 - **Rationale (Inferred):** Matches the UI's two distinct buttons and
   keeps each handler's external-call logic (SMTP vs. Discord REST) fully

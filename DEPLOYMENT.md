@@ -10,11 +10,26 @@ https://click-to-send.vercel.app` (status "Ready" as of this audit).
 
 ## Production URL
 
-`https://click-to-send.vercel.app` — confirmed live, status "Ready", per
-`npx vercel inspect` run 2026-08-06 during this audit (deployment
-`dpl_PRpgESdsEntT9bqLNL6MRG9eqJ4G`, created ~3h before the audit — which
-lines up with, but wasn't independently proven identical to, the
-`8fbe66d` favicon commit's timestamp). Other equivalent aliases observed:
+`https://click-to-send.vercel.app` — confirmed live, status "Ready".
+
+**Re-confirmed 2026-08-17** (onboard-mode doc audit, read-only): `npx
+vercel inspect https://click-to-send.vercel.app` now shows deployment
+`dpl_J4xcL6UWVWJAWuXWePYnAfWRk1Za`, created 2026-08-16 18:33:36 -0700 —
+6 days after the original 2026-08-06 audit below, and this timestamp
+matches `script.js`/`style.css`'s local file mtimes to the minute, meaning
+the live site reflects `HEAD` (`e645ea5`, the button/status
+micro-interactions commit), not a stale build. Aliases on this
+re-inspection: `https://click-to-send.vercel.app`,
+`https://click-to-send-garywangsmes-8349s-projects.vercel.app` (the third
+alias observed in 2026-08-06 was not present this time — not investigated
+further, not consequential; the primary production URL is unaffected).
+
+Original 2026-08-06 audit (superseded by the above, kept for the
+historical record): confirmed live, status "Ready", per `npx vercel
+inspect` (deployment `dpl_PRpgESdsEntT9bqLNL6MRG9eqJ4G`, created ~3h
+before that audit — which lined up with, but wasn't independently proven
+identical to, the `8fbe66d` favicon commit's timestamp). Other equivalent
+aliases observed then:
 `https://click-to-send-garywangsmes-8349s-projects.vercel.app`,
 `https://click-to-send-garywangsmes-8349-garywangsmes-8349s-projects.vercel.app`.
 
@@ -48,27 +63,43 @@ unnecessary to confirm the app is deployed).
 
 ## Manual-deploy confirmation (no GitHub auto-deploy)
 
-**Confirmed this audit: there is no GitHub auto-deploy configured for
-this project.**
+**Confirmed 2026-08-06, and independently re-confirmed 2026-08-17: there
+is still no GitHub auto-deploy configured for this project.**
 
 Evidence:
 1. `git remote -v` shows a real GitHub remote exists (`origin` →
    `https://github.com/Gariyuuu/click-to-send.git`).
 2. `npx vercel project inspect click-to-send` — the output has **no "Git
-   Repository" section at all**. When a Vercel project is connected to a
-   git repo for auto-deploy, this command prints one (confirmed by
-   contrast: running the equivalent inspection against sibling project
-   `chamber-seven`, which **is** git-connected, produces
-   `*-git-main-*.vercel.app`-style deployment aliases — see
-   `chamber-seven/DEPLOYMENT.md`).
+   Repository" section at all**, both on 2026-08-06 and re-run on
+   2026-08-17. When a Vercel project is connected to a git repo for
+   auto-deploy, this command prints one (confirmed by contrast: running
+   the equivalent inspection against sibling project `chamber-seven`
+   (a separate repo at `~/Projects/chamber-seven`, not part of this
+   repository), which **is** git-connected, produces
+   `*-git-main-*.vercel.app`-style deployment aliases — see that repo's
+   own `DEPLOYMENT.md`).
 3. `npx vercel inspect https://click-to-send.vercel.app`'s alias list for
-   the current production deployment contains only the project-name-based
+   the current production deployment contains only project-name-based
    aliases (`click-to-send.vercel.app`,
-   `click-to-send-garywangsmes-8349s-projects.vercel.app`,
-   `click-to-send-garywangsmes-8349-garywangsmes-8349s-projects.vercel.app`)
-   — **no `click-to-send-git-main-*` alias exists**, which is the
-   telltale pattern Vercel generates specifically for git-integration
-   deploys. Its absence here is consistent with (2).
+   `click-to-send-garywangsmes-8349s-projects.vercel.app`, plus a
+   third `...-8349-garywangsmes-8349s-projects.vercel.app` alias observed
+   only on the 2026-08-06 inspection) — **no `click-to-send-git-main-*`
+   alias exists**, which is the telltale pattern Vercel generates
+   specifically for git-integration deploys. Its absence here is
+   consistent with (2).
+4. **Re-checked 2026-08-17:** no `vercel.json` exists at the repo root
+   (confirmed by its absence, same as the original audit) and no
+   `.github/workflows/` directory exists either (confirmed via `find
+   .github -type f`, which errors "No such file or directory" — the
+   `.github/` directory itself doesn't exist). Neither could silently
+   introduce an alternate deploy path.
+5. **The live deployment's timing is independent corroboration, not just
+   absence-of-evidence:** the 2026-08-17 re-inspection found the current
+   production deployment (`dpl_J4xcL6UWVWJAWuXWePYnAfWRk1Za`) was created
+   2026-08-16 18:33:36 -0700 — the exact minute of the last local commit's
+   file mtimes. If GitHub auto-deploy were silently configured, deployment
+   timestamps would track `git push` times, which weren't independently
+   checked; this is circumstantial, not proof, but is consistent with (2)-(4).
 
 **Practical implication:** pushing a commit to `origin/main` on GitHub
 does **not**, by itself, deploy anything. A human (or an agent explicitly

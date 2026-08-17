@@ -75,12 +75,19 @@ the analysis below evaluates it against that context, not against a
   `DISCORD_BOT_TOKEN=your_bot_token`). No real value is present.
 - **No `.env`/`.env.local` file exists in this checkout** (verified via
   `ls -la .env*` — only `.env.example` is present).
-- **`.gitignore` correctly ignores `.env`, `.env.local`, and a catch-all
-  `.env*`** — and, unlike a similar sibling-project audit finding, this
-  does **not** accidentally also block `.env.example` from being
-  committed (confirmed: `.env.example` **is** tracked in git, per `git
-  log --oneline -- .env.example` and `git show --stat` on the initial
-  commit). No fix was needed here.
+- **`.gitignore` ignores `.env`, `.env.local`, and a catch-all `.env*`.**
+  **Correction (found 2026-08-17):** the broad `.env*` line **does** also
+  catch `.env.example` — `git check-ignore -v .env.example` confirms it's
+  ignored via `.gitignore:28:.env*`, and `git log --all --full-history --
+  .env.example` returns no commits, meaning `.env.example` has **never**
+  been tracked in this repo (the 2026-08-06 audit's claim that it was
+  "tracked... part of the initial commit" was wrong — `git show --stat`
+  on the initial commit does not list it; see the corrected file list in
+  `CHANGELOG.md`). **Practical effect: a fresh clone of this repo has no
+  `.env.example`**, so `README.md`'s `cp .env.example .env` instruction
+  silently depends on a file that git will never hand a new checkout.
+  This is a real documentation/setup gap, not merely a stale claim — see
+  `TASKS.md` → High priority.
 - **`git grep` across all tracked files for `GMAIL_APP_PASSWORD`,
   `DISCORD_BOT_TOKEN`, `SITE_PASSCODE`** found only the env-var *names*
   (in `README.md`'s setup instructions and in `api/*.js`'s
