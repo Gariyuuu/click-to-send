@@ -1,3 +1,18 @@
+/* Portfolio design system tokens. design-system.css is linked FIRST and
+ * supplies the focus rule, the overflow guards and the reduced-motion floor;
+ * these point it at this site's own colours. */
+:root {
+  --accent: #00e08a;          /* already the send-confirmation colour */
+  --ring: var(--accent);      /* 9.66:1 on the card, 10.82:1 on the page */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px;
+  /* C7 (WCAG 1.4.11) -- the field boundary was #333844: 1.44:1 on the card,
+   * 1.61:1 on the page, 1.57:1 on the field's own fill. ELEVENTH independent
+   * instance in the programme, and the first on a plain static form.
+   * Opaque, same cool-neutral hue, solved in the C7 L-band: worst case 3.20:1. */
+  --input: oklch(0.53 0.01 250);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -38,7 +53,7 @@ textarea {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
-  border: 1px solid #333844;
+  border: 1px solid var(--input);
   background: #12141a;
   color: #e8e8e8;
   font-family: inherit;
@@ -137,9 +152,19 @@ button:not(:disabled):active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* !important is REQUIRED here, not stylistic. The system's floor carries
+   * !important, and an important declaration beats a non-important one
+   * regardless of specificity or source order -- so without this the site's
+   * authored policy is replaced by the system's clamp. Measured on fluent,
+   * which lost its deliberate 120ms reduce values to 1e-05s exactly this way.
+   *
+   * This block is also the ACCEPTANCE GATE for this app: .status.fx-stamp is
+   * the ONLY place a send result is shown, and the upstream effect it was
+   * adapted from starts at opacity: 0. `animation: none` must leave the element
+   * at its natural, fully visible resting state -- never blank. */
   .status.fx-stamp {
-    animation: none;
-    transform: none;
-    filter: none;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
   }
 }
