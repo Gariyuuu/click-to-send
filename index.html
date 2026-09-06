@@ -14,7 +14,12 @@
   <meta name="twitter:title" content="Click to Send" />
   <meta name="twitter:description" content="A tiny page that sends a message by email or Discord DM, gated by a shared access code." />
   <meta name="twitter:image" content="https://click-to-send.vercel.app/og.png" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%A4%3C/text%3E%3C/svg%3E" />
+  <!-- Was an emoji glyph (📤) rendered as text: it inherits whatever the OS
+       decides an emoji looks like, so the tab icon differed on every platform and
+       carried none of the site's colour. Replaced with a real mark — Lucide's
+       `send` geometry on the accent, drawn at the same 24-unit grid as the button
+       icons below, so the tab, the buttons and the brand are one icon language. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230f1115'/%3E%3Cg fill='none' stroke='%2300e08a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19.5 5.5 10.5 14.5'/%3E%3Cpath d='M19.5 5.5 13.8 19.2a.6.6 0 0 1-1.1.05L10.5 14.5 5.8 12.3a.6.6 0 0 1 .05-1.1Z'/%3E%3C/g%3E%3C/svg%3E" />
   <!-- Portfolio design system, trimmed static include (MASTER v1.2).
        MUST stay before /style.css so the site wins ties. -->
   <link rel="stylesheet" href="/design-system.css" />
@@ -25,17 +30,51 @@
     <h1>Click to Send</h1>
     <p class="subtitle">Type a message, then send it to email and/or Discord.</p>
 
-    <input id="recipient" type="email" placeholder="Recipient email" />
-    <input id="discord-ids" type="text" placeholder="Discord user IDs (comma-separated)" />
-    <textarea id="message" rows="5" placeholder="Type your message..."></textarea>
-    <input id="passcode" type="password" placeholder="Access code" autocomplete="off" />
-
-    <div class="buttons">
-      <button id="send-email">Send Email</button>
-      <button id="send-discord">Send Discord DM</button>
+    <!-- Every field had a placeholder and no label. A placeholder is not a label:
+         it disappears the moment the field has content, so a half-filled form has
+         four unlabelled boxes, and screen readers get no programmatic name at all.
+         Real <label for> elements, kept visually small so the form is no taller. -->
+    <div class="field">
+      <label for="message">Message</label>
+      <textarea id="message" rows="5" placeholder="Type your message…"></textarea>
     </div>
 
-    <p id="status" class="status"></p>
+    <div class="field">
+      <label for="recipient">Recipient email</label>
+      <input id="recipient" type="email" autocomplete="email" placeholder="name@example.com" />
+    </div>
+
+    <div class="field">
+      <label for="discord-ids">Discord user IDs</label>
+      <input id="discord-ids" type="text" placeholder="comma-separated" />
+    </div>
+
+    <div class="field">
+      <label for="passcode">Access code</label>
+      <input id="passcode" type="password" placeholder="shared code" autocomplete="off" />
+    </div>
+
+    <div class="buttons">
+      <!-- Lucide geometry, inlined. No build step here and no CDN on the critical
+           path, so the two icons this page needs are drawn directly, on Lucide's
+           own 24-grid at stroke-width 2, and inherit currentColor. -->
+      <button id="send-email" type="button">
+        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        <span>Send Email</span>
+      </button>
+      <button id="send-discord" type="button">
+        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+        </svg>
+        <span>Send Discord DM</span>
+      </button>
+    </div>
+
+    <!-- aria-live so the send result reaches a screen reader; it is the only place
+         the outcome is reported. -->
+    <p id="status" class="status" role="status" aria-live="polite"></p>
   </main>
 
   <script src="/script.js"></script>

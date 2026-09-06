@@ -274,3 +274,48 @@ highest-value gap: real send-delivery has never been runtime-tested). If
 another feature/polish commit lands without a corresponding `vercel
 --prod`, `DEPLOYMENT.md`'s "production reflects HEAD" claim above will go
 stale immediately — re-run `npx vercel inspect` before trusting it.
+
+## 2026-09-05 — W5 group UI/UX polish pass (`/overhaul`)
+
+Presentation only. No story content, questions, learning logic or backend
+behaviour was changed; no feature added or removed.
+
+Adopted **`~/Projects/.design-system/families/narrative.css` v1.0**, a new
+family layer in the portfolio design system (`MASTER.css -> families/ ->
+overrides/ -> project globals`). It is vendored, not imported — re-vendor from
+the source, never patch the local copy. It owns three axes shared across the
+eleven W5 repos and nothing else:
+
+- **Dialogue / text presentation** — a 66ch reading measure (`--dlg-measure`),
+  the nameplate (`.w5-dialogue-name`, filled for a voiced speaker and unfilled
+  via `[data-voice="inner"]`), the continue affordance, the typewriter caret,
+  and the shared reveal-pacing band `--dlg-reveal-min/max` (8-46ms).
+- **Progress & streak feedback** — `.w5-meter` / `.w5-meter-fill` at one fill
+  duration and easing (420ms ease-out), `.w5-streak` with a single 320ms pop on
+  change that never loops.
+- **Character-art framing** — `.w5-portrait`: one crop, one opaque ring plus an
+  ink hairline, and a ground washed from the character's own accent.
+
+The layer carries **no colour**. It names slots (`--dlg-accent`, `--prog-fill`,
+`--portrait-ring-color`, ...) that this project fills from its own palette, so
+nothing here changed a colour the app already shipped.
+**This repo's changes**:
+- `index.html` — every field gained a real `<label for>`. All four had only
+  placeholders, so a half-filled form was four unlabelled boxes with no
+  programmatic name. The two buttons gained inline Lucide marks, and the status
+  line gained `role="status"` + `aria-live="polite"`.
+- The emoji favicon was replaced with a real mark on the site accent, drawn on
+  the same 24-unit grid as the button icons.
+- `style.css` — field hover/focus states, a two-layer card elevation, a mobile
+  breakpoint, and an in-flight state: the button's icon is swapped for a
+  spinner in place (no layout shift). That spinner is **deliberately exempt
+  from the reduced-motion clamp** — it is the only signal a request is in
+  flight, and freezing it makes the app look hung (PLAYBOOK P02).
+- `script.js` — `setStatus` gained a `state` ("pending"/"success"/"error"), so
+  a failure and a success are no longer told apart by wording alone. Message
+  text is still inserted as `textContent`, never markup.
+
+**Verified**: `node --check script.js`; driven in a browser through the pending,
+success and error states with the API stubbed; no horizontal overflow at 390px.
+There is no automated suite in this repo (`package.json` scripts is `{}`) — this
+is browser-verified, not test-verified.

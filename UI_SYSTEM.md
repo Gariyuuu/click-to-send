@@ -141,3 +141,28 @@ verified by reading the CSS rules.
   content itself was not visually inspected this pass (binary file).
 - No images, icon fonts, or icon libraries are used anywhere else on the
   rendered page.
+
+## W5 narrative family layer (added 2026-09-05)
+
+This project now loads **`~/Projects/.design-system/families/narrative.css`
+v1.0**, vendored locally — see the `SESSION_LOG.md` entry for that date for what
+it owns and what changed here. The hierarchy is:
+
+```
+MASTER.css  ->  families/narrative.css  ->  project globals
+```
+
+Two standing rules:
+
+1. **The vendored copy is never patched in place.** Fix
+   `~/Projects/.design-system/families/narrative.css` and re-vendor, or the
+   copies drift and the layer stops meaning anything.
+2. **The layer carries no colour.** It names slots — `--dlg-accent`,
+   `--dlg-accent-ink`, `--dlg-name-ground`, `--prog-track`, `--prog-fill`,
+   `--portrait-ring-color`, `--portrait-edge-color` — which this project fills
+   from its own palette. Re-tinting the shared classes means changing a slot
+   fill here, never editing the layer.
+
+Class prefix is `w5-` (`.w5-dialogue*`, `.w5-meter*`, `.w5-streak`,
+`.w5-portrait*`, `.w5-caret`, `.w5-continue*`). It names the portfolio group the
+family was cut for, not a version that expires.
